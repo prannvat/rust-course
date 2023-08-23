@@ -183,7 +183,8 @@ fn main() {
     println!("{}", orig);
     println!("{}", add_three(orig));
     println!("{}", orig);
-
+    
+    primitive_and_non_primitive_types()
 
 }
 
@@ -205,7 +206,7 @@ fn distance_between_points_using_arrays(p1: [f64; 2], p2: [f64;2]) -> String {
 
     let difference_array = (x_difference,y_difference);
     return format!("Vector value of p1 to p2 is {:?}", difference_array);
-}
+}  
 
 fn euclidean_distance_between_points_using_tuples(p1: (f64,f64), p2: (f64,f64)) -> String {
 
@@ -220,4 +221,113 @@ fn add_three(mut x: i32) -> i32 {
 }
 
 
+
+fn primitive_and_non_primitive_types(){
+    //Rust Ownership
+    /*
+    ~ Each value in Rust has a variable that's called its owner
+    ~ There can be only one owner at one time
+    ~ When the owner goes out of scope, the value will be dropped
+     */
+
+    let x = 45.3;
+    let y = x;
+
+    println!("x = {}, y = {}", x, y);
+    
+    let s1 = String::from("abc");
+    let s2 = &s1; // & used to reference value via memory location but s2 doesn't own it
+    println!("s1 = {}, s2 = {}", s1,s2);
+
+    //Primitive types: Can't be empty and are fixed size
+    //Non-primitive types: Can be empty and can grow in size
+
+    let vec_1 = vec![1,2,3,4,5];
+    let vec_2 = &vec_1;
+    let vec_3 =vec_2.clone(); //new copy of vec_2 (which is essentially making new copy of vec_1)
+    
+    println!("vec_1 = {:?}, vec_2 = {:?}, vec_3 = {:?}", vec_1, vec_2,vec_3);
+
+    {
+        let my_name = String::from("Prannvat Singh");
+    } //Code block thus variable memory in code block is dropped once out of scope
+
+    let stack_num = 32;
+    let mut  heap_vec = vec![4,5,6];
+   
+    stack_function(stack_num);
+    println!("{}", stack_num);
+
+    heap_function(&mut heap_vec); //&mut means it is a mutable reference, so can be changed and is mutating original value in heap_vec
+
+    /* Here we pass in a mutable reference to heap_vec. i.e. The ownership remains with heap_vec
+    the function will get a reference to heap_vec which is mutable.
+    
+    If we pass in heap_vec without &, then the ownership will pass to the the variable defined
+    inside the function. Hence, when the function finishes, the ownership will be out of scope,
+    and the value will be dropped -> head_vec will no longer have a value.
+
+    If we pass &heap_vec without the &mut then we cannot make changes to the value this reference
+    inside the called function because this reference is not mutable.
+    */
+
+    println!("The value inside the main of heap_vec: {:?}", heap_vec);
+        
+
+}
+
+fn stack_function(mut var:i32){
+    var = 56;
+    println!("Var = {}", var);
+}
+
+fn heap_function(var: &mut Vec<i32>) {
+    /* 
+    Here we receive a mutable reference which means ownership isnt passed to var.
+    var is just a reference which is also mutable which can mutate the original
+    value stored in the variable who's reference is passed in.
+    */
+    var.append(&mut vec![1,2,3,4,5,6,7,8]);
+    println!("Var: {:?}", var);
+    
+}
+
+
+fn mutable_and_immutable_reference(){
+    /*
+    --------------------------------------------------------------------
+    Reference rules
+        ~ one mutable reference in a scope
+        ~ Many immutable references
+        ~ Mutable and immutable cannor coexist
+        ~ Scope of a reference - scope starts where variable is defined and ends when variable is last used
+        ~ Data should not change when immatable references are in scope 
+     */
+
+    let mut heap_num = vec![4,5,6];
+    let ref1: &mut Vec<i32> = &mut heap_num;
+    // let ref2 = &mut heap_num;
+    // println!("ref1: {:?} ref2: {:?}", ref1, ref2);
+    //^^ Cannot do above becuase not allowed to have more than one mutable reference in a scope
+
+    
+    //Mutable and immutable cannot coexist in a scope
+    
+    let mut heap_num = vec![4,5,6];
+    let ref1: &Vec<i32> = &heap_num; //scope of ref 1 starts here
+    let ref2: &Vec<i32> = &heap_num;
+    println!("ref1: {:?} ref2: {:?}", ref1, ref2); //scope of ref2 ends here
+    // scope starts where defined and ends when last used
+
+   
+   // Data should not change when immatable references are in scope
+    let mut heap_num = vec![4,5,6];
+    let ref1: &Vec<i32> = &heap_num;
+    let ref2: &Vec<i32> = &heap_num;
+   
+    println!("ref1: {:?} ref2: {:?}", ref1, ref2); 
+    heap_num.push(68);
+    
+
+}
 
