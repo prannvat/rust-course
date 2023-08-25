@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, f32::consts::PI};
 
 fn main() {
     println!("Hello world, from rust!");
@@ -203,6 +203,12 @@ fn main() {
     // cars_produced_per_minute();
 
     palindrome();
+
+    circle_rectangle();
+    
+    enums();
+
+    
 }
 
 fn distance_between_points_using_tuples(p1: (i32, i32), p2: (i32, i32)) -> String {
@@ -535,12 +541,12 @@ fn palindrome(){
     let palindrome_inp: &str = palindrome_inp.trim();
     let mut palindrome_vec : Vec<char> = vec![];
     for c in &mut palindrome_inp.chars(){
-        palindrome_vec.push(c);
+        palindrome_vec.push(c.to_ascii_lowercase());
     }
 
     let mut palindrome_check : Vec<char> = vec![];
     for element in &mut palindrome_inp.chars().rev(){
-        palindrome_check.push(element);
+        palindrome_check.push(element.to_ascii_lowercase());
     }
     let mut valid = false;
     for i in 0..palindrome_inp.len(){
@@ -558,8 +564,278 @@ fn palindrome(){
     else {
         println!("Input {:?} is NOT a palindrome!", palindrome_inp)
     };
-
-
     
 }
+
+
+struct Person {
+    citizenship: String,
+    name: String,
+    age: i32,
+    gender: char,
+    salary: i32,
+
+}
+
+impl Person {
+
+    //initialiser function -- constructor
+    fn new() -> Self {
+        Person { 
+            citizenship: String::from("England"), 
+            name: String::from("Bob"),
+            age: 30, 
+            gender: 'M', 
+            salary: 20_000 }
+    }
+
+    fn structure_basics() {
+    
+        let person1 = Person{
+            name: String::from("Prannvat Singh"),
+            citizenship: String::from("British"),
+            age: 18,
+            gender: 'M',
+            salary: 2_000
+
+        };
+        println!("The structure values are {} {} {}", person1.name, person1.citizenship, person1.age);
+        println!("The taxes on Person {} is {}", person1.name, person1.compute_taxes());
+
+        let mut person2 = Person::new();
+        
+        println!("The structure values are {} {} {}", person2.name, person2.citizenship, person2.age);
+        println!("The taxes on Person {} is {}", person2.name, person2.compute_taxes());
+        person2.age = 18;
+        println!("The structure values are {} {} {}", person2.name, person2.citizenship, person2.age);
+
+        let person3 = Person{
+            age: 20,
+            ..person1 //base construct
+        };
+        //initialising person 3, changing age and keeping rest attributes from person1
+        println!("The structure values are {} {} {}", person3.name, person3.citizenship, person3.age);
+        println!("The taxes on Person {} is {}", person3.name, person3.compute_taxes())
+        
+    }
+
+    fn compute_taxes(&self) -> f32 {
+        (self.salary as f32) * 0.2 
+
+    }
+}
+
+
+
+/*
+Simple tuples do not have an associated name but tuple structures do
+ */
+
+struct Numbers(i32, i32);
+
+impl Numbers{
+
+    fn tuple_structures(){
+        let some_nums = Numbers(32,16);
+        println!("The values of the two fields are {} and {}", some_nums.0, some_nums.1);
+
+    }
+
+    fn greater_than(&self) -> i32{
+        if self.0 > self.1 {self.0} else {self.1}
+    }
+    fn lesser_than(&self) -> i32{
+        if self.0 < self.1 {self.0} else {self.1}
+    }
+}
+
+//--------------------------------------------------------------------------
+// TRAITS AND DEFAULT IMPLEMENTATION
+//--------------------------------------------------------------------------
+
+struct Animal{  
+    breed : String,
+    colour: String,
+    age: u8,
+}
+
+trait GeneralInfo{
+    fn info(&self) -> (&str,&str,u8);
+    fn breed_info(&self) -> &str;
+}
+
+impl GeneralInfo for Animal{
+    fn info(&self) -> (&str,&str,u8){
+        (&self.breed, &self.colour, self.age)
+    }
+    fn  breed_info(&self) -> &str {
+        &self.breed
+    }
+}
+
+struct  Dog{
+    name: String,
+    breed: String,
+    colour: String,
+    age: u8,
+
+}
+
+
+impl GeneralInfo for Dog{
+    fn info(&self) -> (&str,&str,u8){
+        (&self.name,&self.colour,self.age)
+    }
+
+    fn breed_info(&self) -> &str {
+        &self.breed
+    }
+}
+
+
+fn traits(){
+    let best_boy = Dog{
+        name: String::from("Hubble"),
+        age: 2,
+        colour: String::from("Golden"),
+        breed: String::from("Golden Retriever"),
+    };
+
+    println!("{} is the best little {}", best_boy.name, best_boy.breed);
+
+    println!("Basic info: {:?}", best_boy.info());
+}
+
+
+struct  Rectangle{
+    length: f32,
+    width: f32,
+
+}
+
+struct Circle{
+    radius: f32,
+}
+
+trait ShapeInfo{
+    fn area(&self) -> f32;
+    fn perimeter(&self) -> f32;
+}
+
+impl ShapeInfo for Circle{
+    fn area(&self) -> f32 { 
+        self.radius.powf(2.) * 3.14
+        
+        
+    }
+    fn perimeter(&self) -> f32 {
+        self.radius*2.*3.14
+    }
+
+}
+
+
+impl ShapeInfo for Rectangle{
+    fn area(&self) -> f32 { 
+        self.length*self.width
+        
+    }
+    fn perimeter(&self) -> f32 {
+        self.length*2. + self.width*2.
+    }
+
+}
+
+struct Square{
+    length_of_side: f32,
+}
+
+impl ShapeInfo for Square{
+    fn area(&self) -> f32 {
+       self.length_of_side.powf(2.)
+    }
+    fn perimeter(&self) -> f32 {
+        self.length_of_side*4.
+    }
+}
+
+
+fn circle_rectangle(){
+    let circle1 = Circle{
+        radius: 2.,
+    };
+
+    let rectangle1 = Rectangle{
+        length: 5.,
+        width: 2.5,
+    };
+
+    let square1 = Square{
+        length_of_side: 4.,
+    };
+
+    println!("rectangle has area : {} and perimeter: {}", rectangle1.area(), rectangle1.perimeter());
+    
+    println!("Circle has area : {} and circumference: {}", circle1.area(), circle1.perimeter());
+
+    println!("Square has area : {} and perimeter: {}", square1.area(), square1.perimeter());   
+}
+
+
+
+//ENUMS
+
+enum Conveyance{
+    Car(i32),
+    Train(i32),
+    Air(i32),
+}
+
+impl Conveyance{
+    
+    fn travel_allowance(&self) -> f32 {
+        
+        let allowance = match self{
+            Conveyance::Air(miles) => *miles as f32 * 14. * 2.,
+            Conveyance::Train(miles) => *miles as f32 * 18. * 2.,
+            Conveyance::Car(miles) => *miles as f32 * 30. * 2.,
+        };
+        allowance
+    }
+}
+
+fn enums() {
+    let participant_1 = Conveyance::Car(60);
+    let participant_2 = Conveyance::Train(200);
+    let participant_3 = Conveyance::Air(1500);
+    
+
+    println!("Participant 1 has an allowance of £{} ", participant_1.travel_allowance());
+    println!("Participant 2 has an allowance of £{} ", participant_2.travel_allowance());
+    println!("Participant 3 has an allowance of £{} ", participant_3.travel_allowance());
+
+
+}
+
+
+#[derive(Debug)] //debug trait used for printing stuff
+enum Value{
+    Integer(i32),
+    Float(f32),
+}
+
+fn vector_enum(){
+    let some_val = vec![Value::Integer(12), Value::Float(2.0)];
+
+    println!("The value of the integer vector is {:?} and the float value is {:?}", some_val[0], some_val[1]);
+
+    for i in some_val.iter() {
+        match i {
+            Value::Integer(num) => println!("The value of the integer is {:?}", *num),
+            Value::Float(num) => println!("The value of the float is {:?}", *num),
+        }
+    }   
+}
+
+
 
