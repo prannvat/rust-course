@@ -202,12 +202,19 @@ fn main() {
     // total_production();
     // cars_produced_per_minute();
 
-    palindrome();
+    // palindrome();
 
-    circle_rectangle();
+    // circle_rectangle();
     
-    enums();
+    // enums();
 
+    // point_struct();
+
+    // option_enum();
+    // hash_maps();
+   output_above();
+
+   run_student_assignment();
     
 }
 
@@ -836,6 +843,267 @@ fn vector_enum(){
         }
     }   
 }
+
+
+
+//Generics
+
+// fn square(x:i32) -> i32 { 
+//     x.pow(2)
+// }
+
+// fn squaref32(x:f32) -> f32 {
+//     x.powf(2.)
+// }
+
+
+//^^^^^^^^^^^^^^^^^^^^^^^
+//You can use generics to avoid duplication
+
+//writing restrictions which allow for generic function to run when only acceptable inputs are given for multiplication operation,
+//(implements the traits of multiplication and copy), avoids compiler error.
+//Primtives types are copied and not moved.
+
+fn square<T: std::ops::Mul<Output = T> + Copy> (x:T) -> T {
+    x*x
+}
+
+struct Point<T,U>{
+    x:T,
+    y:U,
+}
+
+impl<T: std::fmt::Debug,U: std::fmt::Debug> Point<T,U> {
+
+    fn printing(&self){
+        println!("the value of the point coordinates are {:?}, {:?}",self.x,self.y);
+    }
+}
+fn point_struct(){
+    let p1: Point<i32,i32> = Point{x:0, y:0};
+    let p2: Point<f64,f64> = Point{x:1.0,y:4.0};
+    let p3: Point<i32,f64> = Point{x:5, y:5.0};
+    p1.printing()
+}
+
+
+
+//Option Enum
+
+/*
+enum Option<T
+ */
+
+fn option_enum(){
+    // let mut disease:Option<String> = None;
+    // disease = Some(String::from("Diabetes"));
+
+    // match disease{
+    //     Some(disease_name) => println!("You have the disease {}", disease_name),
+    //     None => println!("You do not have a disease"), 
+    // }
+
+    let s1 = Some("Some String");
+    println!("The value of s1 is {:?} and the value of s1 itself after unwrapping is {:?}", s1, s1.unwrap());
+
+
+    let f1 = Some(10.54);
+    let mut f2 = 16.5;
+    f2 = f2 + f1.unwrap();
+
+    println!("Sum = {}",f2);
+
+    let number = Some(6);
+    if square_numbers(number) != None {
+        println!("The resukt of square is {:?}", square_numbers(Some(6)).unwrap());
+
+    }
+
+}
+fn square_numbers(num: Option<i32>) -> Option<i32>{
+    match num {
+        Some(number) => Some(number*number),
+        None => None,
+    }
+}
+
+//Result enums
+
+/*
+enum Result<T,E> {
+    Ok(T),
+    Err(E)
+}
+ */
+
+ fn division(divident: f64, divisor: f64) -> Result<f64,String> {
+    // if divisor == 0.0 {
+    //     Err(String::from("Error: division by zero"))
+    // } 
+    // else {
+    //     Ok(divident/divisor)
+    // }
+
+    match divisor {
+        0.0 => Err(String::from("Error: division by zero")),
+        _ => Ok(divident/divisor),
+    }
+
+ }
+
+
+ fn result_enums(){
+    let some_vec = vec![5,5,2,1,5,9];
+    let result =  match some_vec.get(5) {
+        Some(a)=> Ok(a),
+        None => Err("The value does not exist"),
+    };
+ }
+
+ //Hash maps
+
+ use std::{collections::HashMap, hash::Hash};
+
+ fn hash_maps() {
+    let mut person:HashMap<&str, i32> = HashMap::new();
+    person.insert( "Prannvat",  40);
+    person.insert("Kamran", 44);
+    person.insert("shahid",  55);
+
+
+    println!("The age is {:?}", person.get("Prannvat").unwrap());
+
+    if person.contains_key("Prannvat") {
+        println!("The value exists");
+        
+    }
+    else{
+        println!("The value does not exist");
+    }
+
+
+    match person.get("Kamran"){
+        Some(value) => println!("The value exist {}", value),
+        None => println!("The value does not exist"),
+
+    }
+
+    for (name, age) in &person{
+        println!("the person {} is {}", name, age);
+    }
+
+
+    let mut likes:HashMap<&str, &str> = HashMap::new();
+    likes.entry("Hubble").or_insert("apple");
+
+
+    let some_vec = vec![1,2,3,4,5,6,7,8,9];
+    let mut freq_vec: HashMap<i32, u32> = HashMap::new();
+    
+    for i in &some_vec{
+       let freq =  freq_vec.entry(*i).or_insert(0);
+        *freq += 1;
+    }
+    println!("{:?}", freq_vec)
+
+ }
+
+
+
+ #[derive(Debug)]
+ struct Item{
+    id: i32,
+    title: String,
+    year: i32,
+    item_type: ItemType,
+
+ }
+ #[derive(Debug)]
+ enum ItemType {
+    Book,
+    Magazine,
+ }
+
+ fn display_item_info(Item: Item)  {
+    
+    println!("{:?}", Item);
+ }
+ fn output_above(){
+    display_item_info(
+        Item{
+            id: 0,
+            title: String::from("ASOIAF"),
+            year: 2010,
+            item_type: ItemType::Book,
+        }
+    );
+ }
+
+ #[derive(Debug)]
+ struct Student{
+    id: i32,
+    name: String,
+    grade:String,
+ }
+
+ struct StudentManager{
+    students:HashMap<i32, Student>,
+ }
+
+ impl StudentManager {
+    fn new() -> Self {
+        StudentManager{students: HashMap::new()}
+    }
+
+    fn add_student(&mut self, student: Student) -> Result<(), String> {
+        if self.students.contains_key(&student.id) {
+            Err(String::from(format!("Error: student {} already exists", student.id)))
+        }
+        else{
+            self.students.insert(student.id, student);
+            Ok(())
+        
+
+        }
+    }
+
+    fn get_student(&self, id: i32) -> Option<&Student>{
+        self.students.get(&id)
+    }  
+ }
+
+ fn run_student_assignment(){
+    let student1 = Student{
+        id: 0,
+        name: String::from("Einstein"),
+        grade: String::from("A"),
+    };
+    let student2 = Student{
+        id: 0,
+        name: String::from("Einstein"),
+        grade: String::from("A"),
+    };
+
+    let mut student_mgr = StudentManager::new();
+    match student_mgr.add_student(student1){
+        Ok(()) => println!("{:?}", student_mgr.get_student(0).unwrap()),
+        Err(error)  => println!("{}",error),
+    }
+
+    match student_mgr.add_student(student2){
+        Ok(()) => println!("{:?}", student_mgr.get_student(0)),
+        Err(error)  => println!("{}",error),
+    }
+   
+   
+    
+ }
+    
+
+
+
+
+
 
 
 
