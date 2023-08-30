@@ -212,10 +212,17 @@ fn main() {
 
     // option_enum();
     // hash_maps();
-   output_above();
+//    output_above();
 
-   run_student_assignment();
-    
+//    run_student_assignment();
+
+    // lifetimes();
+    // closures();
+    // fuction_types();
+
+    // iterators();
+    assignment_ch_five();
+
 }
 
 fn distance_between_points_using_tuples(p1: (i32, i32), p2: (i32, i32)) -> String {
@@ -1100,10 +1107,202 @@ enum Result<T,E> {
  }
     
 
+//Lifetimes
+//Explains the scope for which a reference is valid
+
+fn lifetimes(){
+    let some_int = 10;
+    let additional_int = some_fn(&some_int);
+    println!("{}", additional_int);
 
 
+   let int1 = 5;
+   let int2 = 10;
 
 
+   
+}
+
+fn some_fn(i:&i32) -> &i32 {
+    &i
+}
+fn greater(i:&i32,j:&i32) -> i32 {
+    if i > j{
+        *i
+    }
+    else{
+        *j
+    }
+}
+
+//Closures
+
+// |...| { ...}
+
+fn closures(){
+    let x = 5;
+    let square = ||  println!("The square of the variable is {}", x*x);
+    square();
+
+    let print_info = |general_info:String, name : &str, age: i32|println!("{} {}", name, age);
+
+    let general_info = String::from("The details are");
+    let (person_name,person_age) = (String::from("Prannvat"), 18);
+    print_info(general_info, &person_name, person_age);
+
+
+    let square = |num| num*num;
+    let x = 5;
+    square(x);
+
+    // let y = 105.5;
+    // square(y); // won't work because first call sets types to i32.
+
+
+    let division_status = |y: f32| {if y!= 0.0 {true} else {false}};
+
+    division_closures_task(5.0, 10.2, division_status);
+
+
+    let mut vec_1 = vec![1,2,3];
+
+    let immut_some_closure = || { // immutable closure
+        println!("Vec 1 : {:?}", vec_1);
+    };
+
+    let mut some_closure = || { //closure must be type mut as it is mutating a value inside of it
+        vec_1.push(35);
+        println!("Vec 1 : {:?}", vec_1);
+    };
+    
+    // println!("Vec 1: {:?}", vec_1);
+    // some_closure(); // called so scope finished so you can use immuatable reference below
+    some_closure(); 
+    vec_1.push(1);
+
+
+    let vector_1 = vec![1,2,3];
+    let mut move_value_some_closure = || { //closure must be type mut as it is mutating a value inside of it
+       let vec_2 = vector_1;
+    };
+    move_value_some_closure();
+    // println!("Vector 1: {:?}", vector_1);
+    // println!("Vec 2 : {:?}", vec_2);
+    //ownership transferred in closure so vec_2 no longer in scope and value is dropped so vector_1 not valid either
+
+}
+
+fn division_closures_task <F: Fn(f32) -> bool>(x:f32, y:f32, f: F)  {
+    if f(y){
+    println!("division result: {} ",x/y);
+    }
+    else{
+        println!("division result is not possible");
+    }
+}
+
+//Fuction types
+fn fuction_types(){
+    let mut f = min;
+    println!("The minimum of two values is {}",f(2,3));
+
+    let (my_name, my_age) = (String::from("Prannvat"), 18);
+    prints_full_info(prints_name,&my_name, my_age);
+
+    let answer = do_twice(add_one, 5);
+
+}
+
+fn max(x: i32, y: i32) -> i32{
+    if x > y {x} else {y}
+}
+
+fn min(x: i32, y: i32) -> i32{
+    if x < y {x} else{y}
+}
+
+
+fn prints_name(name:&str){
+    println!("The name is {}",name);
+}
+fn prints_full_info(f: fn(&str), some_one: &str, age: i32) {
+    f(some_one);
+    println!("and my age is {}",age);
+
+}
+
+fn add_one(x: i32)-> i32 {
+    x+1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
+
+
+//Iterators
+
+fn iterators(){
+    let some_vec = vec![1,2,3,4,5,6,7,8];
+    let mut iter = some_vec.iter();
+
+    println!("{:?}", iter.next());
+
+
+    let a = vec![1,2,3,4,5,6,7];
+
+    let mut check = a.iter().any(|&x| x> 0 ); //checks if atleast one element meets condition and returns true, else false
+    let mut check2 = a.iter().all(|&x| x> 0 );// checks if all elements meet condition and return true, else false
+
+    let check3 = a.iter().find(|&&x|x> 0);//finds first element that meets condition
+
+
+    let check3 = a.iter().position(|&x|x> 4);//returns index position of first element that meet condition
+    let check4 = a.iter().rposition(|&x|x> 4); // returns index position from the right of the and return first element that meet condition
+    
+    
+
+    let a = vec![0,1,2,3,4,5,6,7,8,9];
+    let filtered_values = a.iter().filter(|&x|*x>=5).collect::<Vec<&u32>>();
+    println!("{:?}", filtered_values);
+   
+   let b = a.clone();
+    let filtered_values = a.into_iter().filter(|&x|x>=5).collect::<Vec<u32>>(); //into_iter used actual values instead of references
+    println!("{:?}", filtered_values);
+
+    
+    let mut mapped_value = b.iter().map(|x|2* *x).collect::<Vec<u32>>();
+    println!("{:?}", mapped_value)
+
+}
+
+fn intersection(vec1: Vec<u32>, vec2: Vec<u32>) -> Vec<u32> {
+    
+    let intersection: Vec<u32> = vec1.iter().filter(|&x|vec2.contains(x)).cloned().collect();
+    println!("Intersection of two vectors : {:?}", intersection);
+    intersection
+
+}
+
+fn union(vec1: Vec<u32>,  mut vec2: Vec<u32>){
+    
+    let union = vec1.iter().filter(|&x|!vec2.contains(x)).collect::<Vec<&u32>>();
+    
+    for item in union{
+        vec2.push(*item);
+    }
+    println!("Union of two vectors : {:?}", vec2);
+}
+
+fn assignment_ch_five() {
+    let vec1: Vec<u32> = vec![1,2,3,4,5,6,7,8,9];
+    let vec2: Vec<u32> = vec![1,2,3,4];
+
+    intersection(vec1, vec2);
+    let vec3: Vec<u32> = vec![1,2,3,4,5,6,7,8,9];
+    let vec4: Vec<u32> = vec![1,2,3,10];
+    union(vec3, vec4);    
+}
 
 
 
