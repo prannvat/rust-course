@@ -1,5 +1,5 @@
 use std::{sync::Arc, f32::consts::PI};
-
+use rust_course::section_8;
 fn main() {
     println!("Hello world, from rust!");
     print!("Hello");
@@ -222,6 +222,8 @@ fn main() {
 
     // iterators();
     assignment_ch_five();
+
+    section_8::smart_pointers();
 
 }
 
@@ -1303,6 +1305,9 @@ fn assignment_ch_five() {
     let vec4: Vec<u32> = vec![1,2,3,10];
     union(vec3, vec4);    
 }
+
+
+
 
 
 
